@@ -10,11 +10,11 @@ device=torch.device("cuda")
 R2=r2_score;MAE=mean_absolute_error;ACC=accuracy_score
 F1=lambda y,t:f1_score(y,t,average="macro",zero_division=0)
 
-X_train,X_test=load_raw_data('C:/Users/11762/Desktop/dataset',list(range(1,178)),list(range(178,224)))
+X_train,X_test=load_raw_data('C:/Users/117/Desktop/dataset',list(range(1,178)),list(range(178,224)))
 def zscore(X):m=X.mean(axis=1,keepdims=True);s=X.std(axis=1,keepdims=True)+1e-8;return(X-m)/s
 X_train_n=zscore(X_train);X_test_n=zscore(X_test)
-y_case=generate_labels('C:/Users/11762/Desktop/dataset/train/labels.xlsx')
-ans=pd.read_csv('C:/Users/11762/Desktop/dataset/test data/answer.csv');gt_t5=ans['task5'].values
+y_case=generate_labels('C:/Users/117/Desktop/dataset/train/labels.xlsx')
+ans=pd.read_csv('C:/Users/117/Desktop/dataset/test data/answer.csv');gt_t5=ans['task5'].values
 
 # Build windows
 X_ds=X_train_n[:,::6,:][:,:200,:]
