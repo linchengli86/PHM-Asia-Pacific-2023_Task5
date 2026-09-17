@@ -9,12 +9,12 @@
 # =============================================================================
 
 paths:
-  data_root: "C:/Users/11762/Desktop/dataset"
+  data_root: "C:/Users/117/Desktop/dataset"
   train_data_dir: "${paths.data_root}/train/data"
   test_data_dir: "${paths.data_root}/test/data"
   train_labels_path: "${paths.data_root}/train/labels.xlsx"
   test_answer_path: "${paths.data_root}/test data/answer.csv"
-  output_root: "C:/Users/11762/Desktop/project"
+  output_root: "C:/Users/117/Desktop/project"
 
 data:
   n_params: 7
