@@ -24,13 +24,13 @@ FIG = os.path.join(os.path.dirname(__file__), "..", "figures")
 os.makedirs(FIG, exist_ok=True)
 
 # ─── Load data ───
-X_train, _ = load_raw_data('C:/Users/11762/Desktop/dataset', list(range(1, 178)), list(range(178, 179)))
+X_train, _ = load_raw_data('C:/Users/117/Desktop/dataset', list(range(1, 178)), list(range(178, 179)))
 def zscore(X):
     m = X.mean(axis=1, keepdims=True)
     s = X.std(axis=1, keepdims=True) + 1e-8
     return (X - m) / s
 X = zscore(X_train)
-y = generate_labels('C:/Users/11762/Desktop/dataset/train/labels.xlsx')
+y = generate_labels('C:/Users/117/Desktop/dataset/train/labels.xlsx')
 
 # ─── Extract SSL features (frozen encoder) ───
 class CNNE(torch.nn.Module):
