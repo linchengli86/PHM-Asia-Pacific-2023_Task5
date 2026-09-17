@@ -105,6 +105,40 @@ Test SC4:      ·  ·     ·   ·  · ·
 
 ---
 
+### Key Equations
+
+**Z-score归一化**
+
+$$\tilde{x}_t^{(i)} = \frac{x_t^{(i)} - \mu^{(i)}}{\sigma^{(i)} + \epsilon}, \quad \mu^{(i)} = \frac{1}{T}\sum_{t=1}^{T}x_t^{(i)}, \quad \sigma^{(i)} = \sqrt{\frac{1}{T}\sum_{t=1}^{T}(x_t^{(i)}-\mu^{(i)})^2}$$
+
+**SimCLR NT-Xent损失**
+
+$$\mathcal{L}_{SSL} = -\frac{1}{2B}\sum_{i=1}^{B}\left[\log\frac{e^{\text{sim}(z_i,z_i^+)/\tau}}{\sum_{j\neq i}e^{\text{sim}(z_i,z_j)/\tau}} + \log\frac{e^{\text{sim}(z_i^+,z_i)/\tau}}{\sum_{j\neq i}e^{\text{sim}(z_i^+,z_j)/\tau}}\right]$$
+
+其中sim(a,b)=a·b/(|a||b|)，τ=0.1。
+
+**多头自注意力（MHA）**
+
+$$\text{MHA}(Q,K,V) = \text{Concat}(head_1,\ldots,head_h)W^O$$
+
+$$head_i = \text{Attention}(QW_i^Q, KW_i^K, VW_i^V) = \text{softmax}\left(\frac{QW_i^Q(KW_i^K)^T}{\sqrt{d_k}}\right)VW_i^V$$
+
+本架构中Q=K=V（Self-Attention），h=4。
+
+**锚点回归**
+
+$$\hat{y} = \sum_{i=1}^{5} w_i \cdot (a_i + \delta_i)$$
+
+$$w = \text{softmax}(\text{Linear}_{cls}(hu')), \quad \delta_i = \text{Linear}_{head,i}(hu')$$
+
+其中{a_i} = {0, 25, 50, 75, 100}。
+
+**总损失函数**
+
+$$\mathcal{L} = \mathcal{L}_{BCE}^{t1} + 1.5\mathcal{L}_{CE}^{t2} + \mathcal{L}_{CE}^{t3} + \mathcal{L}_{CE}^{t4} + 0.5\mathcal{L}_{CE}^{anc} + 2.0\mathcal{L}_{Huber}^{t5}$$
+
+---
+
 ## 反思
 
 观察训练图像，十分令人欣慰。
