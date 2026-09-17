@@ -1,0 +1,96 @@
+# =============================================================================
+# LARGE config — ALL innovation points firing
+# =============================================================================
+# Idea 1: enhanced multi-stride (fixed [1,2,3,5,7] + random U(1,10))
+# Idea 2+: dual SSL (SimCLR fast + MAE slow)
+# Idea 3: Transformer encoder (d_model=128, 4 layers, 8 heads)
+# Idea 4: dual channel (CNN→task1 fast, Transformer→task2-5 slow) — WIP
+# Bonus: PCGrad, Proto EMA (WIP), Mixup (WIP), Distill (WIP)
+# =============================================================================
+
+paths:
+  data_root: "C:/Users/11762/Desktop/dataset"
+  train_data_dir: "${paths.data_root}/train/data"
+  test_data_dir: "${paths.data_root}/test/data"
+  train_labels_path: "${paths.data_root}/train/labels.xlsx"
+  test_answer_path: "${paths.data_root}/test data/answer.csv"
+  output_root: "C:/Users/11762/Desktop/project"
+
+data:
+  n_params: 7
+  time_steps: 1201
+  sampling_rate: 1000
+  train_cases: [1, 177]
+  test_cases: [178, 223]
+
+  # Enhanced sampling (Idea 1)
+  use_enhanced: true
+  fixed_strides: [1, 2, 3, 5, 7]       # GoogLeNet-style multi-scale
+  random_stride_range: [1, 10]           # random strides for diversity
+  window_size: 200
+  # Multi-region: cover full time range to handle SC4 domain shift
+  active_region: [[0, 800], [200, 1000], [400, 1200]]
+  windows_per_case:
+    majority: 6
+    minority: 6
+  random_windows_per_case: 10             # random-stride windows per case (+67%)
+
+tasks:
+  task1: { type: binary, num_classes: 1, loss: bce, weight: 1.0 }
+  task2: { type: multiclass, num_classes: 4, loss: ce, weight: 1.5 }
+  task3: { type: multiclass, num_classes: 9, loss: ce, weight: 1.0 }
+  task4: { type: multiclass, num_classes: 5, loss: ce, weight: 1.0 }
+  task5: { type: regression, num_classes: 1, loss: mse, weight: 2.0 }
+
+encoder:
+  type: transformer
+  cnn:
+    channels: [64, 128, 128]
+    kernels: [7, 5, 3]
+    dropout: 0.3
+    output_dim: 128
+  transformer:
+    d_model: 96
+    nhead: 6
+    num_layers: 3
+    dim_feedforward: 192
+    dropout: 0.15
+    max_len: 200
+
+pretrain:
+  enabled: true
+  method: dual                        # Idea 2+: SimCLR + MAE
+  use_windowed_data: true             # 12,840 windows instead of 223 sequences
+  epochs: 80                          # fewer epochs (400 batch/epoch vs 7 before)
+  batch_size: 64                      # larger batch for better SimCLR negatives
+  lr: 3.0e-4
+  use_all_data: true
+  simclr:                             # System 1: fast contrastive
+    temperature: 0.1
+    projection_dim: 64
+    augment_strength: medium
+  mae:                                # System 2: slow reconstruction
+    mask_ratio: 0.5
+    decoder_dim: 128
+    reconstruction_loss: mse
+  dual:
+    alpha_simclr: 1.0
+    alpha_mae: 0.5
+    shared_encoder: true
+
+training:
+  n_folds: 5
+  batch_size: 128
+  max_epochs: 300
+  early_stop_patience: 80
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  lr_factor: 0.5
+  lr_patience: 25
+  use_pcgrad: true
+  random_seed: 42
+
+logging:
+  experiment_name: large
+  log_dir: "${paths.output_root}/experiments"
+  save_model: true

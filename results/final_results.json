@@ -1,0 +1,19 @@
+{
+  "model": "ComboV2_MHA",
+  "test_set": {
+    "t1_acc": 0.935,
+    "t2_acc": 0.783,
+    "t3_f1": 0.811,
+    "t4_f1": 0.852,
+    "t5_r2": 0.94,
+    "t5_mae": 2.0,
+    "SC1_r2": 0.935,
+    "SC4_r2": 0.949
+  },
+  "architecture": "S1(SSL+raw)+MHA \u2192 S2(trainable)+MHA \u2192 Fusion MHA \u2192 Anchor Regression",
+  "params_total": 312000,
+  "params_trainable": 218000,
+  "pretraining": "SimCLR 300 epochs, 223 sequences, NT-Xent loss",
+  "normalization": "Z-score per-sample",
+  "windows": 3276
+}
